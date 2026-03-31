@@ -1,0 +1,2 @@
+# Heroku Procfile - Frontend
+web: node server.js
