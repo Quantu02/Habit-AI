@@ -1,0 +1,14 @@
+fastapi
+uvicorn
+sqlalchemy
+pydantic
+pydantic-settings
+email-validator
+pandas
+numpy
+python-dotenv
+PyJWT
+passlib[bcrypt]
+bcrypt
+python-multipart
+requests
