@@ -12,3 +12,4 @@ passlib[bcrypt]
 bcrypt
 python-multipart
 requests
+httpx
