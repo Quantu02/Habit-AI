@@ -27,6 +27,8 @@ class HabitResponse(BaseModel):
     name: str
     streak: int
     difficulty: int
+    category: Optional[str] = None
+    description: Optional[str] = None
     log: Dict[str, bool]
     created_at: Optional[datetime] = None
     updated_at: Optional[datetime] = None
