@@ -1,0 +1,67 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: habit-ai-postgres
+    environment:
+      POSTGRES_DB: ${DB_NAME:-habit_ai}
+      POSTGRES_USER: ${DB_USER:-habit_user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-habit_password}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-habit_user}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - habit-ai-network
+
+  # FastAPI Backend
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: habit-ai-api
+    environment:
+      DATABASE_URL: postgresql://${DB_USER:-habit_user}:${DB_PASSWORD:-habit_password}@postgres:5432/${DB_NAME:-habit_ai}
+      SECRET_KEY: ${SECRET_KEY:-your-secret-key-change-in-production}
+      CORS_ORIGINS: http://localhost:3000,http://localhost:8001
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app
+    networks:
+      - habit-ai-network
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+  # React Frontend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: habit-ai-web
+    environment:
+      REACT_APP_API_URL: http://localhost:8000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend:/app
+    networks:
+      - habit-ai-network
+
+volumes:
+  postgres_data:
+
+networks:
+  habit-ai-network:
+    driver: bridge
