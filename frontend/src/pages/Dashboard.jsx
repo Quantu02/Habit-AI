@@ -14,6 +14,7 @@ function Dashboard({ onLogout }) {
   const [newHabit, setNewHabit] = useState('');
   const [newCategory, setNewCategory] = useState('');
   const [newDifficulty, setNewDifficulty] = useState(3);
+  const [newDescription, setNewDescription] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('overview');
@@ -65,11 +66,13 @@ function Dashboard({ onLogout }) {
         name: newHabit.trim(),
         difficulty: newDifficulty,
         category: newCategory.trim() || null,
+        description: newDescription.trim() || null,
       });
       setHabits([...habits, response.data]);
       setNewHabit('');
       setNewCategory('');
       setNewDifficulty(3);
+      setNewDescription('');
     } catch (err) {
       setError(err.response?.data?.detail || 'Failed to add habit');
     }
@@ -302,6 +305,16 @@ function Dashboard({ onLogout }) {
                   className="habit-input"
                   style={{ marginTop: '8px' }}
                 />
+                <textarea
+                  id="habit-description-input"
+                  aria-label="Description (optional)"
+                  placeholder="Description (optional)..."
+                  value={newDescription}
+                  onChange={(e) => setNewDescription(e.target.value)}
+                  className="habit-input"
+                  rows={2}
+                  style={{ marginTop: '8px', resize: 'vertical' }}
+                />
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginTop: '8px' }}>
                   <label style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
                     Difficulty (1–5):
@@ -343,6 +356,11 @@ function Dashboard({ onLogout }) {
                               <small style={{ color: 'var(--text-secondary)' }}>
                                 📂 {habit.category}
                               </small>
+                            )}
+                            {habit.description && (
+                              <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', marginTop: '4px' }}>
+                                {habit.description}
+                              </p>
                             )}
                           </div>
                           <span className="streak">🔥 {habit.streak || 0} days</span>
